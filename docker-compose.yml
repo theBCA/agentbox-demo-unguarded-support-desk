@@ -1,0 +1,39 @@
+# The unguarded twin, on its own -- with its customer system beside it.
+#
+# Deliberately a plain `docker compose`, with no AgentBox anywhere near it:
+# this app has to run OUTSIDE the platform or the demo inverts. Onboard it
+# through the admin console and AgentBox wraps it like any other application
+# -- a fine last step of a demo, but no longer the unguarded side of the
+# comparison.
+#
+# Published on 9099, and NOT on 8081: 8080 and 8081 are the two ports AgentBox
+# applications themselves most often declare, so on a live install 8081 is
+# typically a PROTECTED app (measured 2026-09-22 on two machines). 9099 is
+# chosen precisely because nothing suggests it means anything. The container
+# still LISTENS on 8081 internally.
+#
+# The customer system is the SAME server the starter bundles, built from the
+# starter's own directory, so both windows answer questions about the same
+# forty invented people. The difference is the route to it: here the agent
+# holds its address and calls it directly; nothing checks the call, nothing
+# holds the destructive one, nothing records any of it.
+services:
+  app:
+    build: .
+    container_name: unguarded-support-desk
+    # 127.0.0.1, not a bare port: the starter's ingress sidecar binds the IPv4
+    # loopback only, and matching it keeps both sides reachable the same way.
+    ports:
+      - "127.0.0.1:9099:8081"
+    env_file:
+      - .env
+    environment:
+      CRM_URL: http://crm:8000/sse
+    depends_on:
+      - crm
+    restart: unless-stopped
+
+  crm:
+    build: ./crm
+    container_name: unguarded-support-desk-crm
+    restart: unless-stopped
