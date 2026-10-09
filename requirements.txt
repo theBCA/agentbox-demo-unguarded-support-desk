@@ -1,0 +1,7 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+pydantic>=2,<3
+httpx>=0.27,<1
+# The agent, and the MCP client it reaches the customer system with -- directly,
+# because nothing here stands between them.
+openai-agents>=0.2,<1
